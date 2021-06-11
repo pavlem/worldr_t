@@ -18,16 +18,27 @@ class worldr_tTests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
 
-    func testExample() throws {
-        // This is an example of a functional test case.
-        // Use XCTAssert and related functions to verify your tests produce the correct results.
+    func testInfoCellVMIsImageHidden() throws {
+        let infoCell1VM = InfoCellVM(text: "Lorem Ipsum", urlString: "http://www.fff.com")
+        XCTAssert(infoCell1VM.isImageHidden == false)
+        
+        let infoCell2VM = InfoCellVM(text: "Lorem Ipsum", urlString: nil)
+        XCTAssert(infoCell2VM.isImageHidden == true)
     }
+    
+    func testInfoDetailsVMImageHidden() throws {
+        let infoCell1VM = InfoCellVM(text: "Lorem Ipsum", urlString: "http://www.fff.com")
+        let infoCell2VM = InfoCellVM(text: "Lorem Ipsum", urlString: nil)
+        
+        let infoDetails1VM = InfoDetailsVM(infoVM: infoCell1VM)
+        let infoDetails2VM = InfoDetailsVM(infoVM: infoCell2VM)
+        
+        XCTAssert(infoDetails1VM.text == infoCell1VM.text)
+        XCTAssert(infoDetails1VM.textColor == infoCell1VM.textColor)
+        XCTAssert(infoDetails1VM.backgroundColor == infoCell1VM.backgroundColor)
 
-    func testPerformanceExample() throws {
-        // This is an example of a performance test case.
-        self.measure {
-            // Put the code you want to measure the time of here.
-        }
+        XCTAssert(infoDetails2VM.text == infoCell2VM.text)
+        XCTAssert(infoDetails2VM.textColor == infoCell2VM.textColor)
+        XCTAssert(infoDetails2VM.backgroundColor == infoCell2VM.backgroundColor)
     }
-
 }
