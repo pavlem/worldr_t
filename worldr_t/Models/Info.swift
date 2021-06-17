@@ -13,8 +13,6 @@ struct Info: Decodable, Hashable {
     let attachments: InfoAttachment?
     
     struct InfoAttachment: Decodable, Hashable {
-        var id: UUID? = UUID()
-        
         let width: Double
         let height: Double
         let url: String

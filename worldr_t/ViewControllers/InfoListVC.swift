@@ -7,48 +7,61 @@
 
 import UIKit
 
-class InfoVC: UIViewController {
+class InfoListVC: UIViewController {
     
     // MARK: - API
     weak var coordinator: MainCoordinator?
-    
+
     // MARK: - Properties
-    private var vm = InfoVM()
+    private var infoListVM = InfoListVM() {
+        didSet {
+            infoListVM.isLoading ? BlockingScreen.start(vc: self) :             BlockingScreen.stop(vc: self)
+        }
+    }
+    
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, Info>?
-    private let service = Service()
-    private var infos = [Info]()
+    private let networkService = NetworkService()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI()
-
-        service.fetchData { infoArray in
-            infos = infoArray
-            createDataSource()
-            reloadData(sections: [Section(infoArray: infoArray)])
-        }
+        setModels()
+        fetchData()
     }
     
     // MARK: - Helper
     private func setUI() {
         collectionView = UICollectionView(frame: view.bounds, collectionViewLayout: createCompositionalLayout())
         collectionView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
-        collectionView.backgroundColor = vm.background
-        view.addSubview(collectionView)
-        collectionView.register(InfoCell.self, forCellWithReuseIdentifier: InfoCell.reuseIdentifier)
-        title = vm.title
-        
+        collectionView.backgroundColor = infoListVM.background
+        collectionView.register(InfoListCell.self, forCellWithReuseIdentifier: InfoListCell.reuseIdentifier)
         collectionView.delegate = self
+        view.addSubview(collectionView)
+        title = infoListVM.title
+    }
+    
+    private func setModels() {
+        self.infoListVM = InfoListVM(isLoading: true)
+    }
+    
+    private func fetchData() {
+        networkService.fetchData { infoArray in
+            DispatchQueue.main.async {
+                self.infoListVM = InfoListVM(isLoading: false)
+                self.createDataSource()
+                self.reloadData(sections: [Section(infoArray: infoArray)])
+            }
+        }
     }
     
     private func createDataSource() {
         dataSource = UICollectionViewDiffableDataSource<Section, Info>(collectionView: collectionView) { collectionView, indexPath, info in
             
-            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: InfoCell.reuseIdentifier, for: indexPath) as? InfoCell else {
-                fatalError("Unable to dequeue \(InfoCell.reuseIdentifier)")
+            guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: InfoListCell.reuseIdentifier, for: indexPath) as? InfoListCell else {
+                fatalError("Unable to dequeue \(InfoListCell.reuseIdentifier)")
             }
             
             cell.vm = InfoCellVM(info: info)
@@ -57,6 +70,7 @@ class InfoVC: UIViewController {
     }
     
     private func reloadData(sections: [Section]) {
+        
         var snapshot = NSDiffableDataSourceSnapshot<Section, Info>()
         snapshot.appendSections(sections)
 
@@ -69,7 +83,7 @@ class InfoVC: UIViewController {
     
     private func createCompositionalLayout() -> UICollectionViewLayout {
         let layout = UICollectionViewCompositionalLayout { sectionIndex, layoutEnvironment in
-            return self.createSmallTableSection(bottomInset: self.vm.bottomInset, height: self.vm.estimatedHeight)
+            return self.createSmallTableSection(bottomInset: self.infoListVM.bottomInset, height: self.infoListVM.estimatedHeight)
         }
 
         let config = UICollectionViewCompositionalLayoutConfiguration()
@@ -93,10 +107,10 @@ class InfoVC: UIViewController {
 }
 
 // MARK: - UICollectionViewDelegate
-extension InfoVC: UICollectionViewDelegate {
+extension InfoListVC: UICollectionViewDelegate {
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let vm = InfoDetailsVM(infoVM: InfoCellVM(info: infos[indexPath.row]))
-        
+        guard let item = dataSource?.itemIdentifier(for: indexPath) else { return }
+        let vm = InfoDetailsVM(infoVM: InfoCellVM(info: item))
         coordinator?.open(infoDetailsVM: vm)
     }
 }

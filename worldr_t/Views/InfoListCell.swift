@@ -8,10 +8,10 @@
 
 import UIKit
 
-class InfoCell: UICollectionViewCell {
+class InfoListCell: UICollectionViewCell {
     
     // MARK: - API
-    static let reuseIdentifier = "InfoCell"
+    static let reuseIdentifier = "InfoListCell"
     
     var vm: InfoCellVM? {
         willSet {
@@ -46,7 +46,6 @@ class InfoCell: UICollectionViewCell {
         name.font = vm.textFont
         name.textColor = vm.textColor
         name.numberOfLines = vm.numberOfLines
-        
         name.text = vm.text
         infoImageView.image = vm.placeHolderImage
         infoImageView.isHidden = vm.isImageHidden

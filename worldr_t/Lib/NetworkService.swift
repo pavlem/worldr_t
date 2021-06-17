@@ -7,7 +7,7 @@
 
 import UIKit
 
-class Service {
+class NetworkService {
         
     func fetch(image imageUrl: String, completion: @escaping (Result<UIImage, Error>) -> ()) -> URLSessionDataTask? {
 
@@ -34,9 +34,11 @@ class Service {
         return task
     }
     
-    
-    func fetchData(success: ([Info]) -> Void) {
-        let infoArray = Bundle.main.decode([Info].self, from: "testfile.json")
-        success(infoArray)
+    func fetchData(success: @escaping ([Info]) -> Void) {
+        DispatchQueue.global().async {
+            sleep(1) // Simulating a real network request....
+            let infoArray = Bundle.main.decode([Info].self, from: "testfile.json")
+            success(infoArray)
+        }
     }
 }

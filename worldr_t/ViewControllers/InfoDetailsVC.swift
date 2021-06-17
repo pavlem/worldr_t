@@ -14,19 +14,36 @@ class InfoDetailsVC: UIViewController {
         
     var vm: InfoDetailsVM?
 
+    // MARK: - Properties
+    private var textView = UITextView(frame: .zero, textContainer: nil)
+    
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         setUI(vm: vm)
     }
-
+        
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        
+        view.layoutSubviews()
+        textView.isScrollEnabled = true
+    }
+    
     // MARK: - Private
     private func setUI(vm: InfoDetailsVM?) {
         guard let vm = vm else { return }
         
         view.backgroundColor = vm.backgroundColor
-
+                
+        textView.isScrollEnabled = false // causes expanding of the height
+        textView.text = vm.text
+        textView.font = vm.textFont
+        textView.textColor = vm.textColor
+        textView.isEditable = vm.isEditable
+        textView.backgroundColor = vm.textBackgroundColor
+        
         let imageView = InfoImageView(image: nil)
         if let imageURL = vm.imageUrl {
             imageView.vm = InfoImageVM(imageUrlString: imageURL)
@@ -34,27 +51,26 @@ class InfoDetailsVC: UIViewController {
             imageView.isHidden = true
         }
         imageView.contentMode = .scaleAspectFill
-        
-        let textLabel = UILabel()
-        textLabel.font = vm.textFont
-        textLabel.textColor = vm.textColor
-        textLabel.text  = vm.text
-        textLabel.numberOfLines = 0
-        textLabel.textAlignment = .center
 
-        let stackView   = UIStackView()
+        let stackView = UIStackView()
         stackView.axis  = .vertical
         stackView.alignment = .center
         stackView.spacing = vm.spacing
         stackView.addArrangedSubview(imageView)
-        stackView.addArrangedSubview(textLabel)
+        stackView.addArrangedSubview(textView)
         stackView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(stackView)
-
-        imageView.heightAnchor.constraint(equalToConstant: vm.imageHeight).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: vm.imageWidth).isActive = true
-        textLabel.widthAnchor.constraint(equalToConstant: view.frame.width - vm.textPadding * 2).isActive = true
-        stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        stackView.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
+        
+        // Auto Layout
+        let safeArea = view.safeAreaLayoutGuide
+        NSLayoutConstraint.activate([
+            imageView.heightAnchor.constraint(equalToConstant: vm.imageHeight),
+            imageView.widthAnchor.constraint(equalToConstant: vm.imageWidth),
+            
+            stackView.leadingAnchor.constraint(equalTo: safeArea.leadingAnchor, constant: vm.leadingPadding),
+            stackView.trailingAnchor.constraint(equalTo: safeArea.trailingAnchor, constant: vm.trailingPadding),
+            stackView.topAnchor.constraint(equalTo: safeArea.topAnchor, constant: vm.topPadding),
+            stackView.bottomAnchor.constraint(equalTo: safeArea.bottomAnchor, constant: vm.bottomPadding)
+        ])
     }
 }

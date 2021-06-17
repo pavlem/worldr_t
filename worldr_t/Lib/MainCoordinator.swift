@@ -17,7 +17,7 @@ class MainCoordinator: Coordinator {
     }
     
     func start() {
-        let vc = InfoVC()
+        let vc = InfoListVC()
         vc.coordinator = self
         navigationController.pushViewController(vc, animated: true)
     }

@@ -38,6 +38,8 @@ extension InfoCellVM {
     }
     
     var placeHolderImage: UIImage? {
-        return UIImage(named: "ph")
+        return UIImage(named: InfoCellVM.imagePlaceholderName)
     }
+    
+    static let imagePlaceholderName = "ph"
 }

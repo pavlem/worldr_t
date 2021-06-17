@@ -14,7 +14,7 @@ class InfoImageVM {
     var isRounded = false
     var imageTransition = Double(1)
 
-    init(imageUrlString: String, imagePlaceholderName: String = "ph") {
+    init(imageUrlString: String, imagePlaceholderName: String = InfoCellVM.imagePlaceholderName) {
         self.imageUrlString = imageUrlString
         self.imagePlaceholderName = imagePlaceholderName
     }
@@ -31,7 +31,7 @@ class InfoImageVM {
     
     // MARK: - Properties
     private var urlSessionDataTask: URLSessionDataTask?
-    private let moviewService = Service()
+    private let moviewService = NetworkService()
 }
 
 extension InfoImageVM {
