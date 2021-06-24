@@ -20,7 +20,7 @@ class InfoImageVM {
     }
 
     func getImage(withName imageName: String, completion: @escaping (Result<UIImage, Error>) -> ()) {
-        urlSessionDataTask = moviewService.fetch(image: imageName, completion: { (result) in
+        urlSessionDataTask = infoService.fetch(image: imageName, completion: { (result) in
             completion(result)
         })
     }
@@ -31,7 +31,7 @@ class InfoImageVM {
     
     // MARK: - Properties
     private var urlSessionDataTask: URLSessionDataTask?
-    private let moviewService = NetworkService()
+    private let infoService = NetworkService()
 }
 
 extension InfoImageVM {

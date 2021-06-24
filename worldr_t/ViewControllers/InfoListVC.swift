@@ -21,7 +21,6 @@ class InfoListVC: UIViewController {
     
     private var collectionView: UICollectionView!
     private var dataSource: UICollectionViewDiffableDataSource<Section, Info>?
-    private let networkService = NetworkService()
     
     // MARK: - Lifecycle
     override func viewDidLoad() {
@@ -48,7 +47,7 @@ class InfoListVC: UIViewController {
     }
     
     private func fetchData() {
-        networkService.fetchData { infoArray in
+        infoListVM.fetch { infoArray in
             DispatchQueue.main.async {
                 self.infoListVM = InfoListVM(isLoading: false)
                 self.createDataSource()
